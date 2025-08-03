@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Тестовый маршрут по Дагестану</name>
+    <description>Пример маршрута для тестирования парсера</description>
+    
+    <Placemark>
+      <name>Крепость Нарын-Кала</name>
+      <description>Древняя крепость в Дербенте, объект всемирного наследия ЮНЕСКО</description>
+      <Point>
+        <coordinates>48.2897,42.0584,0</coordinates>
+      </Point>
+    </Placemark>
+    
+    <Placemark>
+      <name>Джума-мечеть</name>
+      <description>Одна из старейших мечетей России, построенная в VIII веке</description>
+      <Point>
+        <coordinates>48.2889,42.0578,0</coordinates>
+      </Point>
+    </Placemark>
+    
+    <Placemark>
+      <name>Музей ковра и декоративно-прикладного искусства</name>
+      <description>Уникальная коллекция дагестанских ковров и народных промыслов</description>
+      <Point>
+        <coordinates>48.2901,42.0591,0</coordinates>
+      </Point>
+    </Placemark>
+    
+    <Placemark>
+      <name>Дом Петра I</name>
+      <description>Историческое здание, где останавливался Петр I во время Персидского похода</description>
+      <Point>
+        <coordinates>48.2885,42.0575,0</coordinates>
+      </Point>
+    </Placemark>
+    
+  </Document>
+</kml>

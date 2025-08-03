@@ -1,117 +1,154 @@
 # Аудиогид по Дагестану
 
-Мобильное приложение с аудиогидом по достопримечательностям Дагестана, включающее веб-панель администратора для управления контентом.
+Мобильное приложение с аудиогидом по достопримечательностям Дагестана, использующее Strapi CMS для управления контентом.
+
+## Архитектура (FOSS-стратегия)
+
+Проект построен на готовых open-source решениях для минимизации времени разработки:
+
+- **Backend**: Strapi 4.x (Headless CMS) с PostgreSQL
+- **Admin Panel**: Встроенная Strapi Admin UI (React-based)
+- **Mobile App**: React Native с TypeScript
+- **API**: Автогенерируемый REST API от Strapi
 
 ## Структура проекта
 
 ```
 dagestan-audio-guide/
-├── backend/          # Node.js/Express API сервер
+├── backend/          # Strapi CMS (Backend + Admin Panel)
 ├── mobile/           # React Native мобильное приложение
-├── admin-panel/      # React веб-панель администратора
-├── shared/           # Общие TypeScript типы и интерфейсы
-└── docker-compose.yml # Конфигурация баз данных
+├── shared/           # Общие TypeScript типы для Strapi API
+└── docker-compose.yml # PostgreSQL для разработки
 ```
 
 ## Требования
 
 - Node.js 18+
-- npm или yarn
-- Docker и Docker Compose (для баз данных)
+- npm
+- Docker и Docker Compose (для PostgreSQL)
 - React Native CLI (для мобильного приложения)
 
 ## Быстрый старт
 
-### 1. Установка зависимостей
+### 1. Запуск базы данных
 
 ```bash
-# Установка зависимостей для всех проектов
-npm run install:all
-```
-
-### 2. Запуск баз данных
-
-```bash
-# Запуск PostgreSQL и Redis в Docker
+# Запуск PostgreSQL в Docker
 docker-compose up -d
 ```
 
-### 3. Настройка backend
+### 2. Настройка Strapi Backend
 
 ```bash
+# Создание Strapi проекта (если еще не создан)
 cd backend
-cp .env.example .env
-# Отредактируйте .env файл с вашими настройками
+npx create-strapi-app@latest . --dbclient=postgres --no-run
 
-# Генерация Prisma клиента и миграции
-npm run db:generate
-npm run db:migrate
+# Настройка окружения
+cp .env.example .env
+# Отредактируйте .env файл с настройками PostgreSQL
+
+# Запуск Strapi в режиме разработки
+npm run develop
 ```
 
-### 4. Запуск сервисов
+### 3. Настройка мобильного приложения
 
 ```bash
-# Backend (порт 3000)
-npm run dev:backend
-
-# Admin panel (порт 3001)
-npm run dev:admin
-
-# Mobile app (требует настройки React Native окружения)
 cd mobile
-npm run android  # или npm run ios
+npm install
+
+# Для Android
+npm run android
+
+# Для iOS
+npm run ios
 ```
+
+### 4. Доступ к админке
+
+После запуска Strapi откройте http://localhost:1337/admin для создания аккаунта администратора и управления контентом.
 
 ## Доступные скрипты
 
 - `npm run install:all` - Установка зависимостей для всех проектов
-- `npm run dev:backend` - Запуск backend в режиме разработки
-- `npm run dev:admin` - Запуск админ-панели в режиме разработки
-- `npm run build:all` - Сборка всех проектов
+- `npm run dev:backend` - Запуск Strapi в режиме разработки (порт 1337)
+- `npm run dev:mobile` - Запуск React Native Metro bundler
+- `npm run build:all` - Сборка Strapi для production
 - `npm run lint` - Проверка кода линтером
-- `npm run test` - Запуск тестов
 
 ## Технологии
 
-### Backend
-- Node.js + Express
-- TypeScript
-- PostgreSQL + Prisma ORM
-- Redis для кеширования
-- JWT аутентификация
+### Backend (Strapi)
+- Strapi 4.x Headless CMS
+- PostgreSQL
+- Встроенная система ролей и JWT
+- Автогенерируемый REST API
+- Встроенная Media Library
 
 ### Mobile App
-- React Native
-- TypeScript
-- React Navigation
-- Yandex MapKit
-- React Query
+- React Native с TypeScript
+- React Navigation v6
+- Yandex MapKit (react-native-yamap)
+- React Native Track Player (аудио)
+- React Native IAP (платежи)
+- Axios (HTTP клиент для Strapi API)
 
-### Admin Panel
-- React + TypeScript
-- Material-UI
-- Vite
-- React Query
+## Content Types в Strapi
+
+Проект использует следующие Content Types, создаваемые через Strapi Admin UI:
+
+### Tour
+- name (Text)
+- description (Rich Text)
+- fullDescription (Rich Text)
+- main_image (Media)
+- main_audio (Media)
+- durationMinutes (Number)
+- distanceMeters (Number)
+- priceCents (Number)
+- attributes (Enumeration: new, popular)
+
+### Point of Interest
+- name (Text)
+- description (Rich Text)
+- audio (Media)
+- coordinates (JSON)
+- isFree (Boolean)
+- orderIndex (Number)
+- tour (Relation to Tour)
+
+### User
+- deviceId (Text, unique)
+- platform (Enumeration)
+- purchasedTours (Relation)
 
 ## Разработка
 
-Проект использует монорепозиторий с общими типами в папке `shared/`. Все компоненты используют одинаковые интерфейсы данных.
+### Добавление нового контента
+1. Откройте Strapi Admin UI (http://localhost:1337/admin)
+2. Создайте новые записи через Content Manager
+3. API endpoints генерируются автоматически
 
-### Линтинг и форматирование
+### Кастомная логика
+Для добавления кастомной бизнес-логики (например, парсинг KML/GPX файлов) используйте:
+- Custom API routes в Strapi
+- Custom controllers и services
+- Plugins для переиспользуемой функциональности
 
-Проект настроен с ESLint и Prettier для всех компонентов:
+### Мобильное приложение
+Приложение взаимодействует с Strapi через REST API:
+- `/api/tours` - список туров
+- `/api/tours/:id?populate=*` - детали тура с POI
+- `/api/point-of-interests` - точки интереса
 
-```bash
-npm run lint        # Проверка всех проектов
-npm run lint:fix    # Автоисправление (где возможно)
-```
+## Преимущества FOSS-подхода
 
-### Тестирование
-
-```bash
-npm run test        # Запуск всех тестов
-npm run test:watch  # Тесты в watch режиме
-```
+✅ **Готовая админка** - Strapi Admin UI из коробки  
+✅ **Автогенерируемый API** - REST endpoints без написания кода  
+✅ **Встроенная загрузка файлов** - Media Library для аудио и изображений  
+✅ **Система ролей** - встроенная аутентификация и авторизация  
+✅ **Быстрая разработка** - фокус на бизнес-логике, а не на инфраструктуре  
 
 ## Лицензия
 

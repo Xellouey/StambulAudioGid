@@ -1,53 +1,53 @@
-# Документ дизайна - Аудиогид по Дагестану
+# Документ дизайна MVP - Аудиогид по Дагестану
 
 ## Обзор
 
-Система "Аудиогид по Дагестану" представляет собой комплексное решение, состоящее из мобильного приложения для iOS/Android и веб-панели администратора. Архитектура построена на принципах микросервисов с централизованным API и поддержкой множественных платежных систем.
+MVP системы "Аудиогид по Дагестану" представляет собой упрощенное решение, состоящее из мобильного приложения для iOS/Android и минимальной веб-панели администратора. Архитектура построена на принципах простоты и быстрого запуска с монолитным backend API.
 
 ## Архитектура
 
-### Высокоуровневая архитектура
+### MVP Архитектура (Упрощенная)
 
 ```mermaid
 graph TB
     subgraph "Клиентские приложения"
         iOS[iOS App]
         Android[Android App]
-        Web[Admin Web Panel]
+        Web[Simple Admin Panel]
     end
     
-    subgraph "Backend Services"
-        API[REST API Gateway]
-        Auth[Authentication Service]
-        Content[Content Management Service]
-        Payment[Payment Service]
-        File[File Processing Service]
+    subgraph "Backend (Монолит)"
+        API[Express.js API Server]
+        Controllers[Controllers Layer]
+        Models[Models + Prisma ORM]
+        FileUpload[File Upload Handler]
     end
     
     subgraph "Внешние сервисы"
         YandexMaps[Yandex Maps API]
         Apple[Apple IAP]
         Google[Google Play Billing]
-        RuPay[Russian Payment Gateway]
+        RuStore[RuStore WebView Payments]
     end
     
-    subgraph "Хранилище данных"
+    subgraph "Хранилище"
         DB[(PostgreSQL)]
-        Files[(File Storage)]
-        Cache[(Redis Cache)]
+        LocalFiles[(Local File Storage)]
     end
     
     iOS --> API
     Android --> API
     Web --> API
     
-    API --> Auth
-    API --> Content
-    API --> Payment
-    API --> File
+    API --> Controllers
+    Controllers --> Models
+    Models --> DB
+    API --> FileUpload
+    FileUpload --> LocalFiles
     
-    Content --> DB
-    Payment --> Apple
+    iOS --> Apple
+    Android --> Google
+    Android --> RuStore
     Payment --> Google
     Payment --> RuPay
     File --> Files

@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "app_users",
+  "info": {
+    "singularName": "app-user",
+    "pluralName": "app-users",
+    "displayName": "AppUser"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "deviceId": {
+      "type": "string",
+      "unique": true
+    },
+    "platform": {
+      "type": "enumeration",
+      "enum": [
+        "ios",
+        "android",
+        "rustore"
+      ]
+    },
+    "purchasedTours": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tour.tour",
+      "inversedBy": "app_users"
+    }
+  }
+}

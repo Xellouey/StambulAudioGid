@@ -1,36 +1,20 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15
     container_name: dagestan-audio-guide-postgres
     environment:
       POSTGRES_DB: dagestan_audio_guide
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: strapi_user
+      POSTGRES_PASSWORD: strapi_password
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  redis:
-    image: redis:7-alpine
-    container_name: dagestan-audio-guide-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "pg_isready -U strapi_user"]
       interval: 30s
       timeout: 10s
       retries: 3
 
 volumes:
   postgres_data:
-  redis_data:

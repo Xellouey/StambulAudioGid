@@ -1,30 +1,37 @@
-# Product Overview
+# Product Overview (MVP Focus)
 
-Dagestan Audio Guide is a mobile tourism application that provides audio-guided tours of Dagestan's landmarks and attractions. The system consists of three main components:
+Dagestan Audio Guide is a mobile tourism application that provides audio-guided tours of Dagestan's landmarks and attractions. The MVP focuses on core user value with minimal complexity.
 
-## Core Components
+## MVP Core Components
 
-- **Mobile App** (React Native): Primary user interface for tourists to discover, purchase, and experience audio tours
-- **Admin Panel** (React): Web interface for content managers to create and manage tours, POIs, and view analytics
-- **Backend API** (Node.js/Express): Handles data management, user authentication, payments, and content delivery
+- **Mobile App** (React Native): Primary user interface for tourists to discover and experience audio tours
+- **Backend API** (Node.js/Express): Handles tour data, user management, and basic payment processing
+- **Simple Admin Panel** (React): Minimal web interface for content upload and management
 
-## Key Features
+## MVP Key Features
 
-- Audio-guided tours with GPS-based point-of-interest (POI) navigation
-- In-app purchases for premium tour content
-- Multi-platform support (iOS, Android via Google Play and RuStore)
-- Real-time map integration with Yandex MapKit
-- Content management system for tour operators
-- User analytics and purchase tracking
+- **Core Experience**: Audio-guided tours with GPS-based POI navigation
+- **Freemium Model**: First 3 POIs free, then paywall for full tour access
+- **Multi-platform**: iOS, Android (Google Play), Android (RuStore)
+- **Map Integration**: Yandex MapKit for route and POI display
+- **Content Upload**: Simple KML/GPX file upload for tour creation
+- **Basic Payments**: In-app purchases with receipt validation
 
-## Business Model
+## MVP Business Model
 
-- Freemium model with free POIs and paid premium tours
-- Multi-platform payment processing
-- Content licensing for tour operators and cultural institutions
+- Simple freemium: free preview + paid full access
+- Single tour purchase model (no subscriptions for MVP)
+- Direct content management (no complex licensing for MVP)
 
-## Target Users
+## MVP Target Users
 
-- **Tourists**: Visitors to Dagestan seeking guided cultural experiences
-- **Content Managers**: Tour operators and cultural institutions managing tour content
-- **Administrators**: System administrators monitoring usage and revenue
+- **Primary**: Tourists visiting Dagestan who want guided experiences
+- **Secondary**: Content creators who need simple tour upload tools
+
+## Post-MVP Features (Future)
+- Advanced analytics and reporting
+- User reviews and ratings
+- Push notifications
+- Complex content licensing
+- Advanced admin features
+- Performance optimizations

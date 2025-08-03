@@ -1,139 +1,61 @@
-# Dagestan Audio Guide Backend
+# 🚀 Getting started with Strapi
 
-## Task 2.1 Implementation: Создание основного API сервера и middleware
+Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
 
-### ✅ Completed Features
+### `develop`
 
-#### 1. Express.js Server with Basic Route Structure
-- Main server setup in `src/index.ts`
-- Graceful shutdown handling
-- Health check endpoint at `/health`
-- API base endpoint at `/api`
-
-#### 2. Middleware Implementation
-
-**CORS Middleware (`src/middleware/cors.ts`)**
-- Environment-specific origin configuration
-- Credentials support
-- Proper headers and methods configuration
-
-**Logger Middleware (`src/middleware/logger.ts`)**
-- Morgan-based logging with custom format
-- Sensitive data redaction (passwords, tokens, receipts)
-- Different formats for development and production
-
-**Error Handler Middleware (`src/middleware/errorHandler.ts`)**
-- Custom `ApiError` class for operational errors
-- Comprehensive error response formatting
-- Stack trace inclusion in development mode
-- 404 handler for non-existent routes
-
-**Validation Middleware (`src/middleware/validation.ts`)**
-- Zod-based request validation
-- Support for body, query, and params validation
-- Detailed error messages for validation failures
-
-#### 3. Controllers Implementation
-
-**Tours Controller (`src/controllers/tours.controller.ts`)**
-- `GET /api/tours` - Get all tours
-- `GET /api/tours/:id` - Get tour by ID
-- `POST /api/tours` - Create new tour (admin)
-- `PUT /api/tours/:id` - Update tour (admin)
-- `DELETE /api/tours/:id` - Delete tour (admin)
-
-**Users Controller (`src/controllers/users.controller.ts`)**
-- `POST /api/users/register` - Register user/device
-- `GET /api/users/:deviceId` - Get user by device ID
-- `GET /api/users/:deviceId/purchases` - Get user purchases
-- `POST /api/users/admin/login` - Admin authentication
-
-**Payments Controller (`src/controllers/payments.controller.ts`)**
-- `POST /api/payments/purchase` - Process purchase
-- `GET /api/payments/status/:transactionId` - Get payment status
-- `POST /api/payments/restore` - Restore purchases
-- Platform-specific receipt validation (iOS, Android, RuStore)
-
-#### 4. Routes with Validation
-
-**Tours Routes (`src/routes/tours.routes.ts`)**
-- Zod schemas for tour creation and updates
-- Parameter validation for tour IDs
-- Comprehensive input validation
-
-**Users Routes (`src/routes/users.routes.ts`)**
-- Device registration validation
-- Admin login validation
-- Platform enum validation
-
-**Payments Routes (`src/routes/payments.routes.ts`)**
-- Purchase request validation
-- Platform-specific validation
-- Transaction ID validation
-
-#### 5. Unit Tests
-
-**Middleware Tests**
-- Error handler testing with different error types
-- Validation middleware testing with valid/invalid data
-- Environment-specific behavior testing
-
-**Controller Tests**
-- Tours controller CRUD operations testing
-- Error handling and edge cases
-- Response format validation
-
-**Route Tests**
-- Integration testing with supertest
-- Request/response validation
-- Error handling at route level
-
-### 🏗️ Architecture
+Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
 
 ```
-backend/src/
-├── index.ts                 # Main server entry point
-├── middleware/              # Custom middleware
-│   ├── cors.ts             # CORS configuration
-│   ├── logger.ts           # Request logging
-│   ├── errorHandler.ts     # Error handling
-│   ├── validation.ts       # Request validation
-│   └── index.ts            # Middleware exports
-├── controllers/             # Business logic
-│   ├── tours.controller.ts # Tours CRUD operations
-│   ├── users.controller.ts # User management
-│   ├── payments.controller.ts # Payment processing
-│   └── index.ts            # Controller exports
-├── routes/                  # API routes
-│   ├── tours.routes.ts     # Tours endpoints
-│   ├── users.routes.ts     # Users endpoints
-│   ├── payments.routes.ts  # Payments endpoints
-│   └── index.ts            # Route aggregation
-└── __tests__/              # Test files
-    ├── middleware/         # Middleware tests
-    ├── controllers/        # Controller tests
-    └── routes/             # Route tests
+npm run develop
+# or
+yarn develop
 ```
 
-### 🔧 Requirements Fulfilled
+### `start`
 
-- ✅ **5.1**: Web admin panel API endpoints implemented
-- ✅ **5.2**: Tour management and user authentication endpoints
+Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
 
-### 🚀 Next Steps
-
-This implementation provides the foundation for:
-1. Database integration (Task 2.2)
-2. Tour management service (Task 2.3)
-3. File processing for KML/GPX routes
-4. Payment system integration
-5. Authentication and authorization
-
-### 🧪 Testing
-
-Run the structure validation:
-```bash
-node validate-structure.js
+```
+npm run start
+# or
+yarn start
 ```
 
-The implementation includes comprehensive unit tests for all middleware and controllers, ensuring reliability and maintainability.
+### `build`
+
+Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
+
+```
+npm run build
+# or
+yarn build
+```
+
+## ⚙️ Deployment
+
+Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+
+```
+yarn strapi deploy
+```
+
+## 📚 Learn more
+
+- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
+- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
+- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
+- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
+- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+
+Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+
+## ✨ Community
+
+- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
+- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
+- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+
+---
+
+<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>

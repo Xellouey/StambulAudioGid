@@ -1,13 +1,19 @@
 module.exports = {
-  extends: ['../.eslintrc.js', '@react-native'],
-  env: {
-    'react-native/react-native': true,
-  },
-  plugins: ['react', 'react-native'],
+  root: true,
+  extends: ['@react-native', 'prettier'],
+  plugins: ['prettier'],
   rules: {
-    'react-native/no-unused-styles': 'error',
-    'react-native/split-platform-components': 'error',
-    'react-native/no-inline-styles': 'warn',
-    'react-native/no-color-literals': 'warn',
+    'prettier/prettier': 'error',
+    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    'no-console': 'warn',
   },
+  overrides: [
+    {
+      files: ['**/*.test.ts', '**/*.test.tsx', '**/*.test.js'],
+      env: {
+        jest: true,
+      },
+    },
+  ],
 };

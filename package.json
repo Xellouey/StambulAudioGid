@@ -5,13 +5,15 @@
   "private": true,
   "workspaces": [
     "backend",
-    "mobile"
+    "mobile",
+    "shared"
   ],
   "scripts": {
     "prepare": "husky",
-    "install:all": "npm install && npm run install:backend && npm run install:mobile",
+    "install:all": "npm install && npm run install:backend && npm run install:mobile && npm run install:shared",
     "install:backend": "cd backend && npm install",
     "install:mobile": "cd mobile && npm install",
+    "install:shared": "cd shared && npm install",
     "dev:backend": "cd backend && npm run develop",
     "dev:mobile": "cd mobile && npm run start",
     "build:all": "npm run build:backend",
@@ -22,6 +24,8 @@
     "lint:mobile": "cd mobile && npm run lint",
     "lint:fix:backend": "cd backend && npm run lint:fix",
     "lint:fix:mobile": "cd mobile && npm run lint:fix",
+    "type-check": "npm run type-check:shared",
+    "type-check:shared": "cd shared && npm run type-check",
     "format": "npm run format:backend && npm run format:mobile",
     "format:check": "npm run format:check:backend && npm run format:check:mobile",
     "format:backend": "cd backend && npm run format",
@@ -29,8 +33,7 @@
     "format:check:backend": "cd backend && npm run format:check",
     "format:check:mobile": "cd mobile && npm run format:check",
     "test": "npm run test:backend",
-    "test:backend": "cd backend && npm run test",
-    "prepare": "husky"
+    "test:backend": "cd backend && npm run test"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -45,15 +48,21 @@
   },
   "lint-staged": {
     "backend/**/*.{js,ts,tsx}": [
-      "cd backend && npm run lint:fix",
-      "cd backend && npm run format"
+      "npm run lint:fix:backend",
+      "npm run format:backend"
     ],
     "mobile/**/*.{js,ts,tsx}": [
-      "cd mobile && npm run lint:fix",
-      "cd mobile && npm run format"
+      "npm run lint:fix:mobile",
+      "npm run format:mobile"
     ],
-    "**/*.{json,md}": [
+    "*.{json,md}": [
+      "prettier --write"
+    ],
+    "shared/**/*.{js,ts,tsx,json,md}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "form-data": "^4.0.4"
   }
 }

@@ -1,0 +1,16 @@
+{
+  "name": "@dagestan-audio-guide/shared",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for Dagestan Audio Guide project",
+  "main": "types/index.ts",
+  "types": "types/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

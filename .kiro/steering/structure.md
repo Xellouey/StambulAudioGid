@@ -1,99 +1,154 @@
-# Project Structure
+# Project Structure (FOSS-стратегия)
 
 ## Root Level Organization
 ```
 dagestan-audio-guide/
-├── backend/          # Node.js API server
-├── mobile/           # React Native mobile app
-├── admin-panel/      # React web admin interface
-├── shared/           # Shared TypeScript types and interfaces
-├── .kiro/            # Kiro AI assistant configuration
-├── docker-compose.yml # Database services configuration
-└── package.json      # Workspace configuration and scripts
+├── backend/              # Strapi CMS (Backend + Admin Panel)
+├── mobile/               # React Native mobile app
+├── shared/               # Shared TypeScript types
+├── .kiro/                # Kiro AI assistant configuration
+├── docker-compose.yml    # PostgreSQL + Strapi для разработки
+└── package.json          # Workspace configuration
 ```
 
-## Backend Structure (`/backend`)
+## Backend Structure (Strapi-based)
 ```
 backend/
 ├── src/
-│   ├── controllers/  # Route handlers and business logic
-│   ├── middleware/   # Express middleware (auth, CORS, error handling)
-│   ├── models/       # Data models and database interactions
-│   ├── routes/       # API route definitions
-│   ├── services/     # Business logic services
-│   ├── utils/        # Utility functions and helpers
-│   ├── scripts/      # Database seeding and maintenance scripts
-│   └── __tests__/    # Jest test files
-├── prisma/           # Database schema and migrations
-├── .env              # Environment variables (not in git)
-└── package.json      # Backend dependencies and scripts
+│   ├── api/              # Автогенерируемые API endpoints
+│   │   ├── tour/         # Tour Content Type API
+│   │   ├── poi/          # POI Content Type API
+│   │   └── user/         # User Content Type API
+│   ├── components/       # Переиспользуемые компоненты Strapi
+│   ├── extensions/       # Кастомные расширения Strapi
+│   │   ├── users-permissions/  # Расширение системы пользователей
+│   │   └── upload/       # Расширение загрузки файлов
+│   └── plugins/          # Кастомные плагины
+│       └── route-parser/ # Плагин для парсинга KML/GPX
+├── config/               # Конфигурация Strapi
+│   ├── database.js       # Настройки PostgreSQL
+│   ├── server.js         # Настройки сервера
+│   └── plugins.js        # Конфигурация плагинов
+├── public/               # Статические файлы и загруженные медиа
+└── package.json          # Зависимости Strapi
 ```
 
-## Mobile App Structure (`/mobile`)
+## Mobile App Structure
 ```
 mobile/
 ├── src/
-│   ├── components/   # Reusable UI components
-│   ├── screens/      # Screen components for navigation
-│   ├── navigation/   # React Navigation configuration
-│   ├── services/     # API calls and external services
-│   ├── hooks/        # Custom React hooks
-│   ├── utils/        # Utility functions
-│   ├── stores/       # Zustand state management
-│   └── types/        # Mobile-specific TypeScript types
-├── android/          # Android-specific configuration
-├── ios/              # iOS-specific configuration
-└── package.json      # Mobile dependencies and scripts
+│   ├── components/       # Переиспользуемые UI компоненты
+│   ├── screens/          # Экраны приложения
+│   │   ├── HomeScreen.tsx
+│   │   ├── TourDetailScreen.tsx
+│   │   └── MapScreen.tsx
+│   ├── services/         # API интеграция со Strapi
+│   │   ├── strapiApi.ts  # HTTP клиент для Strapi
+│   │   ├── tourService.ts
+│   │   └── paymentService.ts
+│   ├── navigation/       # React Navigation setup
+│   ├── hooks/            # Custom React hooks
+│   ├── utils/            # Utility functions
+│   └── types/            # Mobile-specific types
+├── android/              # Android-specific files
+├── ios/                  # iOS-specific files
+└── package.json          # Mobile dependencies
 ```
 
-## Admin Panel Structure (`/admin-panel`)
-```
-admin-panel/
-├── src/
-│   ├── components/   # Reusable React components
-│   ├── pages/        # Page components for routing
-│   ├── hooks/        # Custom React hooks
-│   ├── services/     # API integration services
-│   ├── stores/       # Zustand state management
-│   ├── utils/        # Utility functions and helpers
-│   └── types/        # Admin-specific TypeScript types
-├── public/           # Static assets
-└── package.json      # Admin panel dependencies and scripts
-```
-
-## Shared Types (`/shared`)
+## Shared Types Structure
 ```
 shared/
 └── types/
-    └── index.ts      # All shared TypeScript interfaces and types
+    ├── index.ts          # Основные типы (Tour, POI, User)
+    ├── api.ts            # API request/response типы
+    └── strapi.ts         # Strapi-specific типы
 ```
 
-## Key Architectural Patterns
+## Key Architectural Decisions
 
-### Data Flow
-- **API-First**: Backend provides RESTful API consumed by both mobile and admin clients
-- **Shared Types**: Single source of truth for data structures across all components
-- **State Management**: Zustand + React Query for client-side state and server synchronization
+### 🎯 Strapi как единый backend
+- **Content Types**: Tour, POI, User, Purchase создаются через Strapi Admin UI
+- **API Generation**: REST endpoints генерируются автоматически
+- **Admin Panel**: Встроенная админка для управления контентом
+- **Custom Logic**: Добавляется через кастомные endpoints и плагины
 
-### File Naming Conventions
-- **Components**: PascalCase (e.g., `TourCard.tsx`)
-- **Files/Folders**: camelCase (e.g., `tourService.ts`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `API_BASE_URL`)
-- **Interfaces**: PascalCase with descriptive names (e.g., `CreateTourRequest`)
+### 📱 React Native как единственный клиент
+- **Single Codebase**: Один код для iOS и Android
+- **Platform-specific**: Платформо-специфичная логика изолирована
+- **API Integration**: Прямое взаимодействие со Strapi API
 
-### Import Organization
-1. External libraries (React, Express, etc.)
-2. Internal modules (services, components)
-3. Shared types from `/shared/types`
-4. Relative imports (./components, ../utils)
+### 🔄 Data Flow
+```
+Mobile App → Strapi API → PostgreSQL
+     ↓
+Strapi Admin UI → PostgreSQL
+```
 
-### Testing Structure
-- **Backend**: Jest + Supertest for API testing
-- **Admin Panel**: Vitest + Testing Library for component testing
-- **Mobile**: Jest for unit testing
-- Test files co-located with source files using `.test.ts` suffix
+### 📁 File Organization Principles
 
-### Environment Configuration
-- **Development**: `.env` files for local configuration
-- **Production**: Environment variables for deployment
-- **Shared Config**: Docker Compose for consistent database setup
+1. **Feature-based**: Группировка по функциональности, не по типу файла
+2. **Shared First**: Общие типы и утилиты в shared директории
+3. **Platform Separation**: Платформо-специфичный код изолирован
+4. **Convention over Configuration**: Следование конвенциям Strapi и React Native
+
+### 🛠️ Development Workflow
+
+1. **Content Modeling**: Создание Content Types в Strapi Admin UI
+2. **API Development**: Добавление кастомной логики через endpoints
+3. **Mobile Integration**: Интеграция с API в React Native
+4. **Testing**: Тестирование через Strapi Admin UI и мобильное приложение
+
+### 📦 Deployment Structure
+
+```
+Production/
+├── strapi/               # Strapi backend
+│   ├── app/             # Strapi application files
+│   ├── uploads/         # Uploaded media files
+│   └── database/        # PostgreSQL data
+└── mobile-builds/       # Mobile app builds
+    ├── android/         # .apk/.aab files
+    └── ios/             # .ipa files
+```
+
+## Advantages of This Structure
+
+### ✅ Simplicity
+- Минимум кастомного кода
+- Стандартные конвенции Strapi и React Native
+- Понятная структура для любого разработчика
+
+### ✅ Maintainability  
+- Четкое разделение ответственности
+- Автогенерируемый API код
+- Типизированные интерфейсы
+
+### ✅ Scalability
+- Легко добавлять новые Content Types
+- Простое расширение API функциональности
+- Модульная архитектура мобильного приложения
+
+### ✅ Developer Experience
+- Hot reload в Strapi и React Native
+- Встроенная документация API
+- TypeScript поддержка везде
+
+---
+
+## Quick Start Commands
+
+```bash
+# Клонирование и настройка
+git clone <repo>
+cd dagestan-audio-guide
+npm install
+
+# Запуск разработки
+npm run dev:backend    # Strapi на порту 1337
+npm run dev:mobile     # React Native Metro bundler
+
+# Доступ к админке
+open http://localhost:1337/admin
+```
+
+Эта структура оптимизирована для быстрой разработки MVP с использованием готовых инструментов и минимизацией кастомного кода.

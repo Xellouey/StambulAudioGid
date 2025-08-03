@@ -1,0 +1,7 @@
+node_modules/
+android/
+ios/
+.bundle/
+*.log
+package-lock.json
+metro.config.js

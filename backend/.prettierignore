@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.strapi/
+public/uploads/
+*.log
+.env
+.env.*
+package-lock.json

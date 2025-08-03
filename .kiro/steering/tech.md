@@ -1,101 +1,138 @@
-# Technology Stack
+# Technology Stack (FOSS-стратегия)
 
-## Architecture
-- **Monorepo**: Workspace-based project structure with shared types
-- **Database**: PostgreSQL with Prisma ORM
-- **Caching**: Redis for session management and API caching
-- **Infrastructure**: Docker Compose for local development
+## Философия выбора технологий
+**Максимальное использование готовых open-source решений для минимизации времени разработки и фокуса на уникальной бизнес-логике.**
 
-## Backend (Node.js/Express)
+---
+
+## Backend + Admin Panel (Strapi)
+- **Framework**: Strapi 4.x (Headless CMS)
+- **Database**: PostgreSQL 
 - **Runtime**: Node.js 18+
-- **Framework**: Express.js with TypeScript
-- **Database**: PostgreSQL + Prisma ORM
-- **Authentication**: JWT tokens with bcryptjs
-- **Security**: Helmet, CORS, input validation with Zod
-- **File Uploads**: Multer for media handling
-- **Testing**: Jest with Supertest
+- **Admin Panel**: Встроенная Strapi Admin UI (React-based)
+- **API**: Автогенерируемый REST API + кастомные endpoints
+- **File Upload**: Встроенная Strapi Media Library
+- **Authentication**: Встроенная система ролей и JWT токенов
+
+### Кастомные дополнения в Strapi:
+- **File Parsing**: xml2js для KML/GPX парсинга
+- **Payment Integration**: Кастомные endpoints для валидации receipts
+- **User Management**: Кастомная логика для device-based пользователей
+
+---
 
 ## Mobile App (React Native)
 - **Framework**: React Native 0.72+
 - **Navigation**: React Navigation v6
-- **Maps**: Yandex MapKit
-- **Audio**: react-native-sound
-- **Payments**: react-native-iap
-- **State**: Zustand + React Query
-- **Storage**: AsyncStorage
+- **Maps**: react-native-yamap (Yandex MapKit)
+- **Audio**: react-native-track-player
+- **Payments**: react-native-iap (iOS/Android) + WebView (RuStore)
+- **HTTP Client**: Axios для работы с Strapi API
+- **State Management**: React Context + useState (простота для MVP)
+- **Storage**: AsyncStorage для локального кэширования
 
-## Admin Panel (React)
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **UI Library**: Material-UI (MUI)
-- **Forms**: React Hook Form + Zod validation
-- **State**: Zustand + React Query
-- **Testing**: Vitest + Testing Library
+---
 
-## Shared
+## Shared Resources
 - **Language**: TypeScript throughout
-- **Types**: Centralized in `/shared/types`
-- **HTTP Client**: Axios
+- **Types**: Централизованные типы в `/shared/types`
 - **Linting**: ESLint + Prettier
-- **Package Manager**: npm with workspaces
+- **Package Manager**: npm с workspaces
+- **Version Control**: Git с conventional commits
 
-## Common Commands
+---
 
-### Development Setup
+## Infrastructure & Deployment
+- **Development**: Docker Compose (PostgreSQL + Strapi)
+- **Production**: VPS с Docker (простой деплой)
+- **File Storage**: Локальное хранение файлов (для MVP)
+- **Database**: PostgreSQL (managed или self-hosted)
+
+---
+
+## Development Tools
+- **API Testing**: Встроенная Strapi документация + Postman
+- **Mobile Testing**: React Native Debugger + Flipper
+- **Code Quality**: ESLint, Prettier, TypeScript strict mode
+- **Version Control**: Git с feature branches
+
+---
+
+## Что НЕ используем (экономия времени)
+❌ **Custom Express.js server** - заменен на Strapi  
+❌ **Custom Admin Panel** - используем Strapi Admin UI  
+❌ **Custom ORM setup** - Strapi использует встроенную ORM  
+❌ **Custom Authentication** - встроенная система Strapi  
+❌ **Custom File Upload** - встроенная Media Library  
+❌ **Redis caching** - не нужно для MVP  
+❌ **Complex state management** - React Context достаточно  
+❌ **Microservices** - монолитный Strapi проще для MVP  
+
+---
+
+## Преимущества выбранного стека
+
+### 🚀 Скорость разработки
+- Strapi генерирует API автоматически
+- Готовая админка из коробки
+- Встроенная система загрузки файлов
+
+### 💰 Экономическая эффективность  
+- Все инструменты бесплатные и open-source
+- Минимальные требования к хостингу
+- Быстрый time-to-market
+
+### 🔧 Гибкость
+- Strapi позволяет добавлять кастомную логику
+- React Native поддерживает все нужные платформы
+- TypeScript обеспечивает type safety
+
+### 📈 Масштабируемость
+- Strapi может расти вместе с проектом
+- PostgreSQL подходит для любых объемов данных
+- React Native позволяет добавлять новые платформы
+
+---
+
+## Команды для быстрого старта
+
+### Инициализация проекта
 ```bash
-# Install all dependencies
-npm run install:all
+# Создание Strapi проекта
+npx create-strapi-app@latest backend --quickstart --no-run
+cd backend && npm install
 
-# Start databases
-docker-compose up -d
+# Создание React Native проекта  
+npx react-native@latest init DagestanAudioGuide --template react-native-template-typescript
+cd DagestanAudioGuide && npm install
 
-# Setup backend database
-cd backend && npm run db:generate && npm run db:migrate
+# Настройка workspace
+npm init -w backend -w mobile
 ```
 
-### Development
+### Разработка
 ```bash
-# Start backend (port 3000)
-npm run dev:backend
+# Запуск Strapi (backend + admin)
+cd backend && npm run develop
 
-# Start admin panel (port 3001)  
-npm run dev:admin
-
-# Start mobile app
+# Запуск React Native
 cd mobile && npm run android
+# или
+cd mobile && npm run ios
 ```
 
-### Building
+### Деплой
 ```bash
-# Build all projects
-npm run build:all
+# Сборка Strapi для production
+cd backend && npm run build
 
-# Build specific components
-npm run build:backend
-npm run build:admin
+# Сборка мобильного приложения
+cd mobile && npm run build:android
+cd mobile && npm run build:ios
 ```
 
-### Testing
-```bash
-# Run all tests
-npm run test
+---
 
-# Run specific tests
-npm run test:backend
-npm run test:admin
-```
+## Итог
 
-### Code Quality
-```bash
-# Lint all projects
-npm run lint
-
-# Auto-fix linting issues
-npm run lint:fix
-```
-
-## Development Requirements
-- Node.js 18+
-- Docker & Docker Compose
-- React Native CLI (for mobile development)
-- Android Studio/Xcode (for mobile builds)
+Этот стек позволяет создать полноценный MVP за 5-7 недель с минимальными затратами, используя проверенные open-source решения. Фокус на бизнес-логике, а не на инфраструктуре.

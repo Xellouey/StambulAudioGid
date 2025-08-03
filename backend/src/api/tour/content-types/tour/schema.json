@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tours",
+  "info": {
+    "singularName": "tour",
+    "pluralName": "tours",
+    "displayName": "Tour"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "fullDescription": {
+      "type": "richtext"
+    },
+    "main_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "main_audio": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "durationMinutes": {
+      "type": "integer"
+    },
+    "distanceMeters": {
+      "type": "integer"
+    },
+    "priceCents": {
+      "type": "integer"
+    },
+    "attributes": {
+      "type": "enumeration",
+      "enum": [
+        "new",
+        "popular"
+      ]
+    },
+    "points_of_interests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::point-of-interest.point-of-interest"
+    },
+    "app_users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::app-user.app-user",
+      "mappedBy": "purchasedTours"
+    }
+  }
+}

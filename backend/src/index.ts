@@ -1,88 +1,87 @@
-import express from 'express';
-import helmet from 'helmet';
-import dotenv from 'dotenv';
-import { 
-  corsMiddleware, 
-  loggerMiddleware, 
-  errorHandler, 
-  notFoundHandler,
-  uncaughtErrorHandler 
-} from './middleware';
-import apiRoutes from './routes';
+import type { Core } from '@strapi/strapi';
 
-// Загружаем переменные окружения
-dotenv.config();
+export default {
+  /**
+   * An asynchronous register function that runs before
+   * your application is initialized.
+   *
+   * This gives you an opportunity to extend code.
+   */
+  register(/* { strapi }: { strapi: Core.Strapi } */) {},
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Базовые middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
-    },
+  /**
+   * An asynchronous bootstrap function that runs before
+   * your application gets started.
+   *
+   * This gives you an opportunity to set up your data model,
+   * run jobs, or perform some special logic.
+   */
+  async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    // Setup API permissions for public role
+    await setupPublicPermissions(strapi);
   },
-  crossOriginEmbedderPolicy: false
-}));
+};
 
-app.use(corsMiddleware);
-app.use(loggerMiddleware);
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+async function setupPublicPermissions(strapi: Core.Strapi) {
+  try {
+    // Get the public role
+    const publicRole = await strapi
+      .query('plugin::users-permissions.role')
+      .findOne({ where: { type: 'public' } });
 
-// Базовый роут для проверки работоспособности
-app.get('/health', (req, res) => {
-  res.json({ 
-    success: true,
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    service: 'Dagestan Audio Guide API',
-    version: '1.0.0'
-  });
-});
+    if (!publicRole) {
+      console.log('Public role not found');
+      return;
+    }
 
-// API роуты
-app.use('/api', apiRoutes);
+    // Define permissions to set for public role
+    const permissionsToSet = [
+      // Tour permissions
+      { action: 'api::tour.tour.find', enabled: true },
+      { action: 'api::tour.tour.findOne', enabled: true },
+      { action: 'api::tour.tour.create', enabled: true }, // Temporary for testing
+      
+      // Point of Interest permissions  
+      { action: 'api::point-of-interest.point-of-interest.find', enabled: true },
+      { action: 'api::point-of-interest.point-of-interest.findOne', enabled: true },
+      
+      // Route uploader permissions (for testing)
+      { action: 'api::route-uploader.route-uploader.uploadRoute', enabled: true },
+    ];
 
-// Обработка несуществующих маршрутов
-app.use(notFoundHandler);
+    // Update permissions
+    for (const permissionData of permissionsToSet) {
+      const existingPermission = await strapi
+        .query('plugin::users-permissions.permission')
+        .findOne({
+          where: {
+            action: permissionData.action,
+            role: publicRole.id,
+          },
+        });
 
-// Глобальная обработка ошибок
-app.use(errorHandler);
-app.use(uncaughtErrorHandler);
+      if (existingPermission) {
+        await strapi
+          .query('plugin::users-permissions.permission')
+          .update({
+            where: { id: existingPermission.id },
+            data: { enabled: permissionData.enabled },
+          });
+      } else {
+        await strapi
+          .query('plugin::users-permissions.permission')
+          .create({
+            data: {
+              action: permissionData.action,
+              enabled: permissionData.enabled,
+              role: publicRole.id,
+            },
+          });
+      }
+    }
 
-// Обработка необработанных исключений
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
-
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Health check: http://localhost:${PORT}/health`);
-  console.log(`📋 API documentation: http://localhost:${PORT}/api`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    console.log('Process terminated');
-  });
-});
-
-export default app;
+    console.log('✅ Public API permissions configured successfully');
+  } catch (error) {
+    console.error('❌ Error setting up public permissions:', error);
+  }
+}
