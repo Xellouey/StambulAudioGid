@@ -2,24 +2,23 @@
 
 export interface User {
   id: string;
-  email: string;
-  name: string;
-  role: 'admin' | 'user';
+  deviceId: string;
+  platform?: string; // 'ios' | 'android_gplay' | 'android_rustore'
   createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface Tour {
   id: string;
   title: string;
   description: string;
-  price: number;
-  duration: number; // в минутах
-  difficulty: 'easy' | 'medium' | 'hard';
-  category: string;
-  imageUrl?: string;
-  audioUrl?: string;
-  isActive: boolean;
+  fullDescription?: string;
+  bannerUrl?: string;
+  audioDescriptionUrl?: string;
+  durationMinutes?: number;
+  distanceMeters?: number;
+  priceCents: number;
+  attributes: ('new' | 'popular')[];
+  routeData?: RouteData;
   createdAt: Date;
   updatedAt: Date;
   pois: POI[];
@@ -30,28 +29,33 @@ export interface POI {
   tourId: string;
   title: string;
   description: string;
+  audioUrl?: string;
   latitude: number;
   longitude: number;
-  audioUrl?: string;
-  imageUrls: string[];
-  order: number;
+  isFree: boolean;
+  orderIndex: number;
   createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface Purchase {
   id: string;
   userId: string;
   tourId: string;
-  amount: number;
-  currency: string;
-  status: 'pending' | 'completed' | 'failed' | 'refunded';
-  paymentMethod: string;
+  platform: string; // 'ios' | 'android_gplay' | 'android_rustore'
   transactionId?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  receiptData?: string;
+  purchasedAt: Date;
+  expiresAt?: Date;
   user?: User;
   tour?: Tour;
+}
+
+export interface RouteData {
+  coordinates: [number, number][];
+  bounds: {
+    northeast: [number, number];
+    southwest: [number, number];
+  };
 }
 
 // API Response типы
@@ -74,17 +78,17 @@ export interface PaginatedResponse<T> {
 export interface CreateTourRequest {
   title: string;
   description: string;
-  price: number;
-  duration: number;
-  difficulty: 'easy' | 'medium' | 'hard';
-  category: string;
-  imageUrl?: string;
-  audioUrl?: string;
+  fullDescription?: string;
+  bannerUrl?: string;
+  audioDescriptionUrl?: string;
+  durationMinutes?: number;
+  distanceMeters?: number;
+  priceCents: number;
+  attributes?: ('new' | 'popular')[];
+  routeData?: RouteData;
 }
 
-export interface UpdateTourRequest extends Partial<CreateTourRequest> {
-  isActive?: boolean;
-}
+export interface UpdateTourRequest extends Partial<CreateTourRequest> {}
 
 export interface CreatePOIRequest {
   tourId: string;
@@ -93,35 +97,39 @@ export interface CreatePOIRequest {
   latitude: number;
   longitude: number;
   audioUrl?: string;
-  imageUrls?: string[];
-  order: number;
+  isFree?: boolean;
+  orderIndex: number;
 }
 
 export interface UpdatePOIRequest extends Partial<CreatePOIRequest> {}
 
 export interface CreateUserRequest {
-  email: string;
-  name: string;
-  password: string;
-  role?: 'admin' | 'user';
+  deviceId: string;
+  platform?: string;
 }
 
 export interface UpdateUserRequest {
-  name?: string;
-  email?: string;
-  role?: 'admin' | 'user';
+  platform?: string;
 }
 
-// Аутентификация
-export interface LoginRequest {
+// Аутентификация (для админ панели)
+export interface AdminLoginRequest {
   email: string;
   password: string;
 }
 
-export interface LoginResponse {
-  user: User;
+export interface AdminLoginResponse {
+  admin: AdminUser;
   token: string;
   refreshToken: string;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin';
+  createdAt: Date;
 }
 
 export interface RefreshTokenRequest {
@@ -130,18 +138,16 @@ export interface RefreshTokenRequest {
 
 // Фильтры и поиск
 export interface TourFilters {
-  category?: string;
-  difficulty?: 'easy' | 'medium' | 'hard';
+  attributes?: ('new' | 'popular')[];
   minPrice?: number;
   maxPrice?: number;
-  isActive?: boolean;
   search?: string;
 }
 
 export interface PurchaseFilters {
   userId?: string;
   tourId?: string;
-  status?: 'pending' | 'completed' | 'failed' | 'refunded';
+  platform?: string;
   dateFrom?: Date;
   dateTo?: Date;
 }
@@ -149,7 +155,6 @@ export interface PurchaseFilters {
 // Статистика для админ панели
 export interface DashboardStats {
   totalTours: number;
-  activeTours: number;
   totalUsers: number;
   totalPurchases: number;
   totalRevenue: number;
@@ -176,6 +181,25 @@ export interface MapRegion {
   longitude: number;
   latitudeDelta: number;
   longitudeDelta: number;
+}
+
+// Платежи
+export interface PurchaseRequest {
+  tourId: string;
+  platform: 'ios' | 'android_gplay' | 'android_rustore';
+  receipt: string; // платформо-специфичный receipt
+}
+
+export interface PurchaseResponse {
+  success: boolean;
+  purchaseId: string;
+  expiresAt?: Date;
+}
+
+export interface PurchaseResult {
+  success: boolean;
+  transactionId?: string;
+  error?: string;
 }
 
 // Конфигурация приложения
