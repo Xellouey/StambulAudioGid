@@ -1,30 +1,36 @@
 {
   "name": "dagestan-audio-guide",
   "version": "1.0.0",
-  "description": "Audio guide application for Dagestan with mobile app and admin panel",
+  "description": "Audio guide application for Dagestan with Strapi backend and React Native mobile app",
   "private": true,
   "workspaces": [
     "backend",
-    "mobile",
-    "admin-panel"
+    "mobile"
   ],
   "scripts": {
-    "install:all": "npm install && npm run install:backend && npm run install:mobile && npm run install:admin",
+    "prepare": "husky",
+    "install:all": "npm install && npm run install:backend && npm run install:mobile",
     "install:backend": "cd backend && npm install",
     "install:mobile": "cd mobile && npm install",
-    "install:admin": "cd admin-panel && npm install",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:admin": "cd admin-panel && npm run dev",
-    "build:all": "npm run build:backend && npm run build:admin",
+    "dev:backend": "cd backend && npm run develop",
+    "dev:mobile": "cd mobile && npm run start",
+    "build:all": "npm run build:backend",
     "build:backend": "cd backend && npm run build",
-    "build:admin": "cd admin-panel && npm run build",
-    "lint": "npm run lint:backend && npm run lint:mobile && npm run lint:admin",
+    "lint": "npm run lint:backend && npm run lint:mobile",
+    "lint:fix": "npm run lint:fix:backend && npm run lint:fix:mobile",
     "lint:backend": "cd backend && npm run lint",
     "lint:mobile": "cd mobile && npm run lint",
-    "lint:admin": "cd admin-panel && npm run lint",
-    "test": "npm run test:backend && npm run test:admin",
+    "lint:fix:backend": "cd backend && npm run lint:fix",
+    "lint:fix:mobile": "cd mobile && npm run lint:fix",
+    "format": "npm run format:backend && npm run format:mobile",
+    "format:check": "npm run format:check:backend && npm run format:check:mobile",
+    "format:backend": "cd backend && npm run format",
+    "format:mobile": "cd mobile && npm run format",
+    "format:check:backend": "cd backend && npm run format:check",
+    "format:check:mobile": "cd mobile && npm run format:check",
+    "test": "npm run test:backend",
     "test:backend": "cd backend && npm run test",
-    "test:admin": "cd admin-panel && npm run test"
+    "prepare": "husky"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -32,7 +38,22 @@
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.4",
     "prettier": "^3.0.0",
     "typescript": "^5.1.0"
+  },
+  "lint-staged": {
+    "backend/**/*.{js,ts,tsx}": [
+      "cd backend && npm run lint:fix",
+      "cd backend && npm run format"
+    ],
+    "mobile/**/*.{js,ts,tsx}": [
+      "cd mobile && npm run lint:fix",
+      "cd mobile && npm run format"
+    ],
+    "**/*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }
